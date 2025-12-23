@@ -341,9 +341,9 @@ class QualifyingReplay(arcade.Window):
 
                 drs_zones_to_show = []
 
-                current_frame = frames[self.frame_index]
+                current_frame = frames[int(self.frame_index)]
                 current_tel = current_frame.get("telemetry", {}) if isinstance(current_frame.get("telemetry", {}), dict) else {}
-                current_comparison_tel = comparison_telemetry[self.frame_index].get("telemetry") if comparison_telemetry and self.frame_index < len(comparison_telemetry) else {}
+                current_comparison_tel = comparison_telemetry[int(self.frame_index)].get("telemetry") if comparison_telemetry and self.frame_index < len(comparison_telemetry) else {}
                 current_dist = self._pick_telemetry_value(current_tel, "dist")
                 
                 for dz in self.drs_zones:
@@ -817,6 +817,11 @@ class QualifyingReplay(arcade.Window):
             # Toggle DRS zones on track map
             self.toggle_drs_zones = not self.toggle_drs_zones
             return
+        elif symbol == arcade.key.LEFT:
+            # Allow rewind even when lap is complete
+            self._key_left_held = True
+            self.race_controls_comp.flash_button('rewind')
+            return
         
         # Disable other controls when lap is complete
         if self.is_lap_complete():
@@ -828,9 +833,6 @@ class QualifyingReplay(arcade.Window):
         elif symbol == arcade.key.RIGHT:
             self._key_right_held = True
             self.race_controls_comp.flash_button('forward')
-        elif symbol == arcade.key.LEFT:
-            self._key_left_held = True
-            self.race_controls_comp.flash_button('rewind')
         elif symbol == arcade.key.UP:
             self.playback_speed *= 2.0
             self.race_controls_comp.flash_button('speed_increase')
